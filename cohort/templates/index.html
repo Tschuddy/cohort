@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Exam Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'main.css' %}">
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="bg-info text-white py-4 text-center">
+        <h1>Welcome to the Exam Portal</h1>
+        <p>Your one-stop solution for managing exams and scores.</p>
+    </header>
+
+    <section class="filter-section py-3 bg-light">
+        <div class="container text-end">
+            <!-- Button to trigger modal -->
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">Add Now</button>
+        </div>
+        <section class="container mt-5">
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table align-middle table-bordered table-hover mt-4">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Profile</th>
+                            <th>Full Name</th>
+                            <th>Cohort</th>
+                            <th>Program</th>
+                            <th>Status</th>
+                            <th>Date Joined</th>
+                            <th>Rating</th>
+                            <th>Views</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in page_obj %}
+                        <tr> 
+                            <td><img src="{{ user.student_Profile.profile_picture.url }}" alt="Profile" width="80" height="80" class="rounded-circle"></td>
+                            <td>{{ user.full_name }}</td>
+                            <td>{{ user.cohort }}</td>
+                            <td>{{ user.program }}</td>
+                            <td><span class="badge bg-success text-white">{{ user.status }}</span></td> 
+                            <td>{{ user.date_joined }}</td>
+                            <td>{{ user.rating }}</td>
+                            <td>
+                                <a href="{% url 'profile' user.id %}"  class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7">No users found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination Controls -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </section>
+    </section>
+    
+    <!-- Add User Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add User Form -->
+                    <form action="{% url 'add_user' %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="profileImage" class="form-label">Profile Image URL</label>
+                            <input type="text" class="form-control" id="profileImage" name="profile_picture" placeholder="Enter Profile Image URL">
+                        </div>
+                        <div class="mb-3">
+                            <label for="fullName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="fullName" name="full_name" placeholder="Enter Full Name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="cohort" class="form-label">Cohort</label>
+                            <input type="text" class="form-control" id="cohort" name="cohort" placeholder="Enter Cohort">
+                        </div>
+                        <div class="mb-3">
+                            <label for="program" class="form-label">Program</label>
+                            <input type="text" class="form-control" id="program" name="program" placeholder="Enter Program">
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="online">Online Exam</option>
+                                <option value="class">Class Exam</option>
+                                <option value="missed">Missed Exam</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dateJoined" class="form-label">Date Joined</label>
+                            <input type="date" class="form-control" id="dateJoined" name="date_joined">
+                        </div>
+                        <div class="mb-3">
+                            <label for="rating" class="form-label">Rating</label>
+                            <input type="number" class="form-control" id="rating" name="rating" placeholder="Enter Rating" min="1" max="5">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add User</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
