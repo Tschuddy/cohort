@@ -1,19 +1,13 @@
 from django.urls import path
-
-from .views import HompageView
-from .views import profile_view
-# from .views import add_user
-from django.urls import path
 from . import views
 
+
+# app_name = 'cohorts'
 urlpatterns = [
-    path('', views.HompageView.as_view(), name='homepage'),
-    path('add-user/', views.add_user, name='add_user'),
-    path('', views.HompageView.as_view(), name='home'),
-    path('profile/<int:user_id>/', profile_view, name='profile'),
-      
+  path('student_list', views.student_list, name='student_list'),
+  path('create_cohort', views.create_cohort, name='create_cohort'),
+  path('newuser', views.create_student, name= 'newuser'),
+  path('del_student/<int:pk>', views.del_student, name='del_student'),
+  path('profile/<slug:slug>', views.get_profile_from_student, name='student_profile'),
+  path('message',views.message, name='message')
 ]
-
-
-
-
